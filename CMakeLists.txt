@@ -22,18 +22,6 @@ add_executable(Fish src/main.cpp
         src/Items/Characters/Character.h
         src/Items/Characters/Link.cpp
         src/Items/Characters/Link.h
-        src/Items/Armors/Armor.cpp
-        src/Items/Armors/Armor.h
-        src/Items/HeadEquipments/HeadEquipment.cpp
-        src/Items/HeadEquipments/HeadEquipment.h
-        src/Items/LegEquipments/LegEquipment.cpp
-        src/Items/LegEquipments/LegEquipment.h
-        src/Items/HeadEquipments/CapOfTheHero.cpp
-        src/Items/HeadEquipments/CapOfTheHero.h
-        src/Items/Armors/OldShirt.cpp
-        src/Items/Armors/OldShirt.h
-        src/Items/LegEquipments/WellWornTrousers.cpp
-        src/Items/LegEquipments/WellWornTrousers.h
         src/Scenes/Scene.cpp
         src/Scenes/Scene.h
         src/Scenes/BattleScene.cpp
@@ -43,10 +31,15 @@ add_executable(Fish src/main.cpp
         src/Items/Maps/Map.h
         src/Items/Maps/Battlefield.cpp
         src/Items/Maps/Battlefield.h
-        src/Items/Mountable.cpp
-        src/Items/Mountable.h
-        src/Items/Armors/FlamebreakerArmor.cpp
-        src/Items/Armors/FlamebreakerArmor.h)
+        src/Items/Fish/Fish.cpp
+        src/Items/Fish/Fish.h
+        src/Items/Fish/PlayerFish.cpp
+        src/Items/Fish/PlayerFish.h
+        src/Items/Fish/SmallFish.cpp
+        src/Items/Fish/SmallFish.h
+        src/Items/Fish/BigFish.cpp
+        src/Items/Fish/BigFish.h
+)
         
 target_link_libraries(Fish
         Qt::Core

@@ -1,6 +1,3 @@
-//
-// Created by gerw on 8/20/24.
-//
 #include "MyGame.h"
 #include "Scenes/BattleScene.h"
 
@@ -8,14 +5,17 @@ MyGame::MyGame(QWidget *parent) : QMainWindow(parent) {
     battleScene = new BattleScene(this);
     view = new QGraphicsView(this);
     view->setScene(battleScene);
-    // Set the view's window size to 1280x720
     view->setFixedSize((int) view->scene()->width(), (int) view->scene()->height());
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
+    
+    // 去除边框
+    view->setFrameShape(QFrame::NoFrame);
+    
+    // 启用鼠标跟踪（只对view设置）
+    view->setMouseTracking(true);
 
     setCentralWidget(view);
-    // Adjust the QMainWindow size to tightly wrap the QGraphicsView
     setFixedSize(view->sizeHint());
     battleScene->startLoop();
 }

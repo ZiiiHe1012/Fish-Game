@@ -1,7 +1,3 @@
-//
-// Created by gerw on 8/20/24.
-//
-
 #ifndef QT_PROGRAMMING_2024_ITEM_H
 #define QT_PROGRAMMING_2024_ITEM_H
 
@@ -25,10 +21,12 @@ public:
         // Draw nothing as it is an empty item
         // Its pixmapItem is automatically handled by children's paint()
     }
+    
+    // 添加公共访问方法
+    QGraphicsPixmapItem* getPixmapItem() const { return pixmapItem; }
 
 protected:
     QGraphicsPixmapItem *pixmapItem{};
 };
-
 
 #endif //QT_PROGRAMMING_2024_ITEM_H

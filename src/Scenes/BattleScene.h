@@ -1,46 +1,44 @@
-//
-// Created by gerw on 8/20/24.
-//
-
-#ifndef QT_PROGRAMMING_2024_BATTLESCENE_H
-#define QT_PROGRAMMING_2024_BATTLESCENE_H
+#ifndef BATTLESCENE_H
+#define BATTLESCENE_H
 
 #include <QKeyEvent>
+#include <QMouseEvent>
 #include "Scene.h"
 #include "../Items/Maps/Map.h"
 #include "../Items/Characters/Character.h"
+#include "../Items/Fish/SmallFish.h"
+#include "../Items/Fish/BigFish.h"
+#include <QVector>
 
 class BattleScene : public Scene {
 Q_OBJECT
 
 public:
     explicit BattleScene(QObject *parent);
-
+    
     void processInput() override;
-
     void processMovement() override;
-
-    void processPicking() override;
-
+    void processCollision();
+    
 protected slots:
-
     void update() override;
-
+    
 protected:
-    void keyPressEvent(QKeyEvent *event) override;
-
-    void keyReleaseEvent(QKeyEvent *event) override;
-
+    void mouseMoveEvent(QGraphicsSceneMouseEvent *event) override;
+    void enterEvent(QEvent *event);
+    void leaveEvent(QEvent *event);
+    
 private:
-
-    Mountable *findNearestUnmountedMountable(const QPointF &pos, qreal distance_threshold = std::numeric_limits<qreal>::max());
-
-    static Mountable * pickupMountable(Character *character, Mountable *mountable);
-
+    void spawnSmallFish();
+    void spawnBigFish();
+    void checkCollisions();
+    
     Map *map;
     Character *character;
-    Armor *spareArmor;
+    QVector<SmallFish*> smallFishes;
+    QVector<BigFish*> bigFishes;
+    int score{0};
+    bool mouseInScene{false};
 };
 
-
-#endif //QT_PROGRAMMING_2024_BATTLESCENE_H
+#endif

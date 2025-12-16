@@ -1,123 +1,145 @@
-//
-// Created by gerw on 8/20/24.
-//
-
-#include <QDebug>
 #include "BattleScene.h"
 #include "../Items/Characters/Link.h"
 #include "../Items/Maps/Battlefield.h"
-#include "../Items/Armors/FlamebreakerArmor.h"
+#include <QRandomGenerator>
+#include <QGraphicsSceneMouseEvent>
+#include <QDebug>
 
 BattleScene::BattleScene(QObject *parent) : Scene(parent) {
-    // This is useful if you want the scene to have the exact same dimensions as the view
     setSceneRect(0, 0, 1280, 720);
+    
     map = new Battlefield();
     character = new Link();
-    spareArmor = new FlamebreakerArmor();
+    
     addItem(map);
     addItem(character);
-    addItem(spareArmor);
+    
     map->scaleToFitScene(this);
-    character->setPos(map->getSpawnPos());
-    spareArmor->unmount();
-    spareArmor->setPos(sceneRect().left() + (sceneRect().right() - sceneRect().left()) * 0.75, map->getFloorHeight());
+    character->setPos(640, 360);
+    
+    // 初始生成鱼
+    for (int i = 0; i < 5; i++) {
+        spawnSmallFish();
+    }
+    for (int i = 0; i < 2; i++) {
+        spawnBigFish();
+    }
+}
+
+void BattleScene::spawnSmallFish() {
+    auto rand = QRandomGenerator::global();
+    SmallFish *fish = new SmallFish();
+    fish->setPos(rand->bounded(1280), rand->bounded(720));
+    addItem(fish);
+    smallFishes.append(fish);
+}
+
+void BattleScene::spawnBigFish() {
+    auto rand = QRandomGenerator::global();
+    BigFish *fish = new BigFish();
+    fish->setPos(rand->bounded(1280), rand->bounded(720));
+    addItem(fish);
+    bigFishes.append(fish);
 }
 
 void BattleScene::processInput() {
     Scene::processInput();
-    if (character != nullptr) {
-        character->processInput();
+}
+
+void BattleScene::processMovement() {
+    Scene::processMovement();
+    
+    if (character) {
+        // 只有鼠标在场景中时才移动
+        if (mouseInScene) {
+            character->updateMovement(deltaTime);
+        }
+        
+        // 限制在屏幕内
+        QPointF pos = character->pos();
+        if (pos.x() < 50) pos.setX(50);
+        if (pos.x() > 1230) pos.setX(1230);
+        if (pos.y() < 50) pos.setY(50);
+        if (pos.y() > 670) pos.setY(670);
+        character->setPos(pos);
+    }
+    
+    // 更新小鱼移动
+    for (SmallFish *fish : smallFishes) {
+        fish->updateMovement(deltaTime);
+        
+        // 边界处理
+        QPointF pos = fish->pos();
+        if (pos.x() < 0 || pos.x() > 1280 || pos.y() < 0 || pos.y() > 720) {
+            fish->setPos(QRandomGenerator::global()->bounded(1280), 
+                        QRandomGenerator::global()->bounded(720));
+        }
+    }
+    
+    // 更新大鱼移动
+    for (BigFish *fish : bigFishes) {
+        fish->updateMovement(deltaTime);
+        
+        // 边界处理
+        QPointF pos = fish->pos();
+        if (pos.x() < 0 || pos.x() > 1280 || pos.y() < 0 || pos.y() > 720) {
+            fish->setPos(QRandomGenerator::global()->bounded(1280), 
+                        QRandomGenerator::global()->bounded(720));
+        }
     }
 }
 
-void BattleScene::keyPressEvent(QKeyEvent *event) {
-    switch (event->key()) {
-        case Qt::Key_A:
-            if (character != nullptr) {
-                character->setLeftDown(true);
-            }
-            break;
-        case Qt::Key_D:
-            if (character != nullptr) {
-                character->setRightDown(true);
-            }
-            break;
-        case Qt::Key_J:
-            if (character != nullptr) {
-                character->setPickDown(true);
-            }
-            break;
-        default:
-            Scene::keyPressEvent(event);
-    }
+void BattleScene::processCollision() {
+    checkCollisions();
 }
 
-void BattleScene::keyReleaseEvent(QKeyEvent *event) {
-    switch (event->key()) {
-        case Qt::Key_A:
-            if (character != nullptr) {
-                character->setLeftDown(false);
-            }
-            break;
-        case Qt::Key_D:
-            if (character != nullptr) {
-                character->setRightDown(false);
-            }
-            break;
-        case Qt::Key_J:
-            if (character != nullptr) {
-                character->setPickDown(false);
-            }
-            break;
-        default:
-            Scene::keyReleaseEvent(event);
+void BattleScene::checkCollisions() {
+    if (!character) return;
+    
+    // 检测与小鱼的碰撞
+    for (int i = smallFishes.size() - 1; i >= 0; i--) {
+        SmallFish *fish = smallFishes[i];
+        qreal distance = QLineF(character->pos(), fish->pos()).length();
+        
+        if (distance < 60 && character->getSize() > fish->getSize()) {
+            score++;
+            character->grow(1);
+            removeItem(fish);
+            smallFishes.removeAt(i);
+            delete fish;
+            spawnSmallFish();
+            qDebug() << "Score:" << score;
+        }
+    }
+    
+    // 检测与大鱼的碰撞
+    for (BigFish *fish : bigFishes) {
+        qreal distance = QLineF(character->pos(), fish->pos()).length();
+        
+        if (distance < 60 && character->getSize() < fish->getSize()) {
+            qDebug() << "Game Over! Final Score:" << score;
+            // TODO: 游戏结束逻辑
+        }
     }
 }
 
 void BattleScene::update() {
     Scene::update();
+    processCollision();
 }
 
-void BattleScene::processMovement() {
-    Scene::processMovement();
-    if (character != nullptr) {
-        character->setPos(character->pos() + character->getVelocity() * (double) deltaTime);
+void BattleScene::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
+    mouseInScene = true;
+    if (character) {
+        character->setTargetPos(event->scenePos());
     }
+    Scene::mouseMoveEvent(event);
 }
 
-void BattleScene::processPicking() {
-    Scene::processPicking();
-    if (character->isPicking()) {
-        auto mountable = findNearestUnmountedMountable(character->pos(), 100.);
-        if (mountable != nullptr) {
-            spareArmor = dynamic_cast<Armor *>(pickupMountable(character, mountable));
-        }
-    }
+void BattleScene::enterEvent(QEvent *event) {
+    mouseInScene = true;
 }
 
-Mountable *BattleScene::findNearestUnmountedMountable(const QPointF &pos, qreal distance_threshold) {
-    Mountable *nearest = nullptr;
-    qreal minDistance = distance_threshold;
-
-    for (QGraphicsItem *item: items()) {
-        if (auto mountable = dynamic_cast<Mountable *>(item)) {
-            if (!mountable->isMounted()) {
-                qreal distance = QLineF(pos, item->pos()).length();
-                if (distance < minDistance) {
-                    minDistance = distance;
-                    nearest = mountable;
-                }
-            }
-        }
-    }
-
-    return nearest;
-}
-
-Mountable *BattleScene::pickupMountable(Character *character, Mountable *mountable) {
-    // Limitation: currently only supports armor
-    if (auto armor = dynamic_cast<Armor *>(mountable)) {
-        return character->pickupArmor(armor);
-    }
-    return nullptr;
+void BattleScene::leaveEvent(QEvent *event) {
+    mouseInScene = false;
 }
