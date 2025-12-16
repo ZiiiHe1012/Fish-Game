@@ -1,9 +1,13 @@
 #include "TitleScene.h"
+#include "../Audio/AudioManager.h"
 #include <QGraphicsPixmapItem>
 
 TitleScene::TitleScene(QObject *parent) : Scene(parent) {
     setSceneRect(0, 0, 1280, 720);
-    
+
+    // 播放标题音乐
+    AudioManager::instance()->playTitleMusic();
+
     // 背景 - 缩放到场景大小
     QPixmap bgPixmap(":/Scenes/title_background.png");
     if (bgPixmap.isNull()) {

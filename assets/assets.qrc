@@ -26,5 +26,11 @@
         <file>UI/restart_button.png</file>
         <file>UI/title_button.png</file>
         <file>UI/game_title.png</file>
+
+        <!-- Music -->
+        <file>Music/title_bgm.mp3</file>
+        <file>Music/battle_bgm.mp3</file>
+        <file>Music/gameover_bgm.mp3</file>
+        <file>Music/victory_bgm.mp3</file>
     </qresource>
 </RCC>

@@ -23,6 +23,7 @@ private slots:
     void showPauseMenu();
     void showGameOverScene(bool victory);
     void restartGame();
+    void resumeFromPause();
 
 private:
     QGraphicsView *view;

@@ -1,6 +1,7 @@
 #include "BattleScene.h"
 #include "../Items/Characters/Link.h"
 #include "../Items/Maps/Battlefield.h"
+#include "../Audio/AudioManager.h"
 #include <QRandomGenerator>
 #include <QGraphicsSceneMouseEvent>
 #include <QDebug>
@@ -8,9 +9,11 @@
 
 
 BattleScene::BattleScene(QObject *parent) : Scene(parent) {
-    // 设置更大的场景范围
     setSceneRect(0, 0, mapWidth, mapHeight);
     
+    // 播放战斗音乐
+    AudioManager::instance()->playBattleMusic();
+
     // 背景
     map = new Battlefield();
     addItem(map);
@@ -18,7 +21,6 @@ BattleScene::BattleScene(QObject *parent) : Scene(parent) {
     if (map->getPixmapItem()) {
         QPixmap bgPixmap = map->getPixmapItem()->pixmap();
         if (!bgPixmap.isNull()) {
-            // 缩放背景到整个地图大小
             map->getPixmapItem()->setPixmap(bgPixmap.scaled(mapWidth, mapHeight, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
         }
     }
@@ -26,8 +28,12 @@ BattleScene::BattleScene(QObject *parent) : Scene(parent) {
     
     character = new Link();
     addItem(character);
-    // 玩家初始位置在地图中心
     character->setPos(mapWidth / 2, mapHeight / 2);
+    
+    // 创建 UI
+    gameUI = new GameUI(this, this);
+    gameUI->updateProgress(0, 20);
+    gameUI->updateHealth(health, maxHealth);
 }
 
 void BattleScene::spawnSmallFish() {
@@ -171,17 +177,21 @@ void BattleScene::checkCollisions() {
         SmallFish *fish = smallFishes[i];
         QRectF fishRect = fish->sceneBoundingRect();
         
-        // 使用矩形相交检测
         if (playerRect.intersects(fishRect) && playerSize > fish->getSize()) {
             score++;
+            fishEaten++;
             character->grow(1);
             removeItem(fish);
             smallFishes.removeAt(i);
             delete fish;
-            spawnSmallFish();
-            qDebug() << "Score:" << score;
             
-            // 胜利条件：分数达到20
+            // 更新进度条
+            if (gameUI) {
+                gameUI->updateProgress(score, 20);
+            }
+            
+            qDebug() << "Score:" << score << "Fish eaten:" << fishEaten;
+            
             if (score >= 20) {
                 emit gameOver(true);
             }
@@ -189,12 +199,54 @@ void BattleScene::checkCollisions() {
     }
     
     // 检测与大鱼的碰撞
-    for (BigFish *fish : bigFishes) {
+    for (int i = bigFishes.size() - 1; i >= 0; i--) {
+        BigFish *fish = bigFishes[i];
         QRectF fishRect = fish->sceneBoundingRect();
         
-        // 使用矩形相交检测
-        if (playerRect.intersects(fishRect) && playerSize < fish->getSize()) {
-            emit gameOver(false);
+        if (playerRect.intersects(fishRect)) {
+            if (fishEaten >= 10) {
+                // 吃够10条小鱼，可以吃大鱼
+                if (playerSize > fish->getSize()) {
+                    score += 3;
+                    character->grow(2);
+                    removeItem(fish);
+                    bigFishes.removeAt(i);
+                    delete fish;
+                    
+                    // 更新进度条
+                    if (gameUI) {
+                        gameUI->updateProgress(score, 20);
+                    }
+                    
+                    qDebug() << "Ate big fish! Score:" << score;
+                    
+                    if (score >= 20) {
+                        emit gameOver(true);
+                    }
+                }
+            } else {
+                // 没吃够10条小鱼，碰到大鱼扣血
+                if (playerSize < fish->getSize()) {
+                    health -= 50;  // 扣一半血
+                    
+                    // 更新血量条
+                    if (gameUI) {
+                        gameUI->updateHealth(health, maxHealth);
+                    }
+                    
+                    // 击退大鱼（删除并重新生成）
+                    removeItem(fish);
+                    bigFishes.removeAt(i);
+                    delete fish;
+                    
+                    qDebug() << "Hit by big fish! Health:" << health;
+                    
+                    // 血量归零才游戏失败
+                    if (health <= 0) {
+                        emit gameOver(false);
+                    }
+                }
+            }
         }
     }
 }
@@ -202,6 +254,8 @@ void BattleScene::checkCollisions() {
 // 添加重置游戏方法
 void BattleScene::resetGame() {
     score = 0;
+    fishEaten = 0;
+    health = 100;  // 重置血量
     
     // 清除所有鱼
     for (SmallFish *fish : smallFishes) {
@@ -219,6 +273,12 @@ void BattleScene::resetGame() {
     // 重置玩家到地图中心
     if (character) {
         character->setPos(mapWidth / 2, mapHeight / 2);
+    }
+    
+    // 重置 UI
+    if (gameUI) {
+        gameUI->updateProgress(0, 20);
+        gameUI->updateHealth(health, maxHealth);
     }
     
     // 重置计时器
@@ -252,29 +312,28 @@ void BattleScene::leaveEvent(QEvent *event) {
 void BattleScene::updateCameraView() {
     if (!character) return;
     
-    // 获取所有视图
     QList<QGraphicsView*> viewsList = views();
     if (viewsList.isEmpty()) return;
     
     QGraphicsView *view = viewsList.first();
     
-    // 计算视图中心应该在的位置（跟随玩家）
     QPointF playerPos = character->pos();
     
-    // 视图大小
     qreal viewWidth = 1280;
     qreal viewHeight = 720;
     
-    // 计算视图左上角位置
     qreal viewX = playerPos.x() - viewWidth / 2;
     qreal viewY = playerPos.y() - viewHeight / 2;
     
-    // 限制视图不超出地图边界
     if (viewX < 0) viewX = 0;
     if (viewY < 0) viewY = 0;
     if (viewX + viewWidth > mapWidth) viewX = mapWidth - viewWidth;
     if (viewY + viewHeight > mapHeight) viewY = mapHeight - viewHeight;
     
-    // 设置视图中心
     view->centerOn(viewX + viewWidth / 2, viewY + viewHeight / 2);
+    
+    // 每帧更新 UI 位置到视角顶部
+    if (gameUI) {
+        gameUI->updatePosition(QPointF(viewX, viewY));
+    }
 }

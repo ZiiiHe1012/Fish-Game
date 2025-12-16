@@ -11,6 +11,7 @@ find_package(Qt6 COMPONENTS
         Core
         Gui
         Widgets
+        Multimedia
         REQUIRED)
 
 add_executable(Fish src/main.cpp
@@ -49,11 +50,16 @@ add_executable(Fish src/main.cpp
         src/Scenes/PauseScene.h
         src/Scenes/GameOverScene.cpp
         src/Scenes/GameOverScene.h
+        src/UI/GameUI.cpp
+        src/UI/GameUI.h
+        src/Audio/AudioManager.cpp
+        src/Audio/AudioManager.h
 )
         
 target_link_libraries(Fish
         Qt::Core
         Qt::Gui
         Qt::Widgets
+        Qt::Multimedia
 )
 

@@ -8,6 +8,7 @@
 #include "../Items/Characters/Character.h"
 #include "../Items/Fish/SmallFish.h"
 #include "../Items/Fish/BigFish.h"
+#include "../UI/GameUI.h"
 #include <QVector>
 
 class BattleScene : public Scene {
@@ -21,6 +22,7 @@ public:
     void processCollision();
     
     int getScore() const { return score; }
+    int getFishEaten() const { return fishEaten; }
     void resetGame();
     
 signals:
@@ -40,14 +42,19 @@ private:
     void spawnSmallFish();
     void spawnBigFish();
     void checkCollisions();
-    void updateCameraView();  // 添加这个
+    void updateCameraView();
     
     Map *map;
     Character *character;
     QVector<SmallFish*> smallFishes;
     QVector<BigFish*> bigFishes;
     int score{0};
+    int fishEaten{0};  // 记录吃掉的小鱼数量
+    int health{100};        // 添加血量
+    int maxHealth{100};     // 添加最大血量
     bool mouseInScene{false};
+
+    GameUI *gameUI{nullptr};  // 添加 UI
 
     qint64 smallFishSpawnTimer{0};
     qint64 bigFishSpawnTimer{0};

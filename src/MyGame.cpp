@@ -72,38 +72,15 @@ void MyGame::showBattleScene() {
 }
 
 void MyGame::showPauseMenu() {
-    if (!battleScene) return;
+    if (battleScene) {
+        battleScene->stopLoop();
+    }
     
-    battleScene->stopLoop();
-    
-    // 在当前场景上添加暂停界面
     PauseScene *pauseScene = new PauseScene(this);
+    connect(pauseScene, &PauseScene::resumeGame, this, &MyGame::resumeFromPause);
+    connect(pauseScene, &PauseScene::restartGame, this, &MyGame::restartGame);
+    connect(pauseScene, &PauseScene::backToTitle, this, &MyGame::showTitleScene);
     
-    // 保存原场景
-    QGraphicsScene *originalScene = view->scene();
-    
-    // 恢复游戏
-    connect(pauseScene, &PauseScene::resumeGame, this, [this, pauseScene, originalScene]() {
-        view->setScene(originalScene);
-        delete pauseScene;
-        if (battleScene) {
-            battleScene->startLoop();
-        }
-    });
-    
-    // 重新开始
-    connect(pauseScene, &PauseScene::restartGame, this, [this, pauseScene]() {
-        delete pauseScene;
-        restartGame();
-    });
-    
-    // 回到标题
-    connect(pauseScene, &PauseScene::backToTitle, this, [this, pauseScene]() {
-        delete pauseScene;
-        showTitleScene();
-    });
-    
-    // 切换到暂停场景
     view->setScene(pauseScene);
 }
 
@@ -122,6 +99,13 @@ void MyGame::showGameOverScene(bool victory) {
     connect(gameOverScene, &GameOverScene::backToTitle, this, &MyGame::showTitleScene);
     
     view->setScene(gameOverScene);
+}
+
+void MyGame::resumeFromPause() {
+    if (battleScene) {
+        view->setScene(battleScene);
+        battleScene->startLoop();
+    }
 }
 
 void MyGame::restartGame() {
