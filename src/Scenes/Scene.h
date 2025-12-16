@@ -1,7 +1,3 @@
-//
-// Created by gerw on 8/20/24.
-//
-
 #ifndef QT_PROGRAMMING_2024_SCENE_H
 #define QT_PROGRAMMING_2024_SCENE_H
 
@@ -15,15 +11,13 @@ public:
     explicit Scene(QObject *parent);
 
     void startLoop();
+    void stopLoop();  // 添加这个方法
 
     virtual void processInput();
-
     virtual void processMovement();
-
     virtual void processPicking();
 
 protected slots:
-
     virtual void update();
 
 protected:
@@ -34,5 +28,4 @@ private:
     qint64 lastTime{-1};
 };
 
-
-#endif //QT_PROGRAMMING_2024_SCENE_H
+#endif

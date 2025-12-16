@@ -1,7 +1,3 @@
-//
-// Created by gerw on 8/20/24.
-//
-
 #include <QDateTime>
 #include "Scene.h"
 
@@ -11,7 +7,7 @@ Scene::Scene(QObject *parent) : QGraphicsScene(parent), timer(new QTimer(this)) 
 
 void Scene::update() {
     auto currentTime = QDateTime::currentDateTime().toMSecsSinceEpoch();
-    if (lastTime == -1) { // first frame
+    if (lastTime == -1) {
         deltaTime = 0;
     } else {
         deltaTime = currentTime - lastTime;
@@ -27,15 +23,15 @@ void Scene::startLoop() {
     timer->start(1000 / 90); // 90FPS
 }
 
-void Scene::processInput() {
+void Scene::stopLoop() {
+    timer->stop();
+}
 
+void Scene::processInput() {
 }
 
 void Scene::processMovement() {
-
 }
 
 void Scene::processPicking() {
-
 }
-

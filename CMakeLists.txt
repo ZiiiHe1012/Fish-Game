@@ -39,6 +39,16 @@ add_executable(Fish src/main.cpp
         src/Items/Fish/SmallFish.h
         src/Items/Fish/BigFish.cpp
         src/Items/Fish/BigFish.h
+        src/UI/UIButton.cpp
+        src/UI/UIButton.h
+        src/Scenes/TitleScene.cpp
+        src/Scenes/TitleScene.h
+        src/Scenes/HelpScene.cpp
+        src/Scenes/HelpScene.h
+        src/Scenes/PauseScene.cpp
+        src/Scenes/PauseScene.h
+        src/Scenes/GameOverScene.cpp
+        src/Scenes/GameOverScene.h
 )
         
 target_link_libraries(Fish

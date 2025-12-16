@@ -39,7 +39,7 @@ void Character::updateMovement(qint64 deltaTime) {
     }
     
     // 移动
-    QPointF velocity = direction * moveSpeed;
+    QPointF velocity = direction * currentMoveSpeed;
     setPos(currentPos + velocity * deltaTime);
 }
 
@@ -53,5 +53,17 @@ int Character::getSize() const {
 void Character::grow(int amount) {
     if (playerFish) {
         playerFish->grow(amount);
+        
+        // 确保碰撞模式不变
+        if (playerFish->getPixmapItem()) {
+            playerFish->getPixmapItem()->setShapeMode(QGraphicsPixmapItem::MaskShape);
+        }
+        
+        // 长大后速度变慢
+        currentMoveSpeed = baseMoveSpeed * qPow(0.98, playerFish->getSize() - 5);
+        
+        if (currentMoveSpeed < 0.1) {
+            currentMoveSpeed = 0.1;
+        }
     }
 }

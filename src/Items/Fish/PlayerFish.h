@@ -9,6 +9,8 @@ public:
     
     void setFacingLeft();
     void setFacingRight();
+
+    QRectF boundingRect() const override;
 };
 
 #endif

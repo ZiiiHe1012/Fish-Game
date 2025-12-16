@@ -1,13 +1,14 @@
-//
-// Created by gerw on 8/20/24.
-//
-
-#ifndef QT_PROGRAMMING_2024_MYGAME_H
-#define QT_PROGRAMMING_2024_MYGAME_H
+#ifndef MYGAME_H
+#define MYGAME_H
 
 #include <QGraphicsView>
 #include <QMainWindow>
+#include <QStackedWidget>
 #include "Scenes/Scene.h"
+#include "Scenes/TitleScene.h"
+#include "Scenes/HelpScene.h"
+#include "Scenes/BattleScene.h"
+#include "Scenes/GameOverScene.h"
 
 class MyGame : public QMainWindow {
 Q_OBJECT
@@ -15,10 +16,24 @@ Q_OBJECT
 public:
     explicit MyGame(QWidget *parent = nullptr);
 
+private slots:
+    void showTitleScene();
+    void showHelpScene();
+    void showBattleScene();
+    void showPauseMenu();
+    void showGameOverScene(bool victory);
+    void restartGame();
+
 private:
-    Scene *battleScene;
     QGraphicsView *view;
+    QGraphicsView *pauseView;
+    
+    TitleScene *titleScene;
+    HelpScene *helpScene;
+    BattleScene *battleScene;
+    GameOverScene *gameOverScene;
+    
+    void switchScene(Scene *scene);
 };
 
-
-#endif //QT_PROGRAMMING_2024_MYGAME_H
+#endif

@@ -1,9 +1,29 @@
 <RCC>
     <qresource prefix="/">
+        <!-- Fish -->
         <file>Items/Fish/player_fish_left.png</file>
         <file>Items/Fish/player_fish_right.png</file>
-        <file>Items/Fish/small_fish.png</file>
-        <file>Items/Fish/big_fish.png</file>
+        <file>Items/Fish/small_fish_left.png</file>
+        <file>Items/Fish/small_fish_right.png</file>
+        <file>Items/Fish/big_fish_left.png</file>
+        <file>Items/Fish/big_fish_right.png</file>
+        
+        <!-- Maps -->
         <file>Items/Maps/stage_background.bmp</file>
+        
+        <!-- Scenes -->
+        <file>Scenes/title_background.png</file>
+        <file>Scenes/help_background.png</file>
+        <file>Scenes/pause_background.png</file>
+        <file>Scenes/gameover_background.png</file>
+        <file>Scenes/victory_background.png</file>
+        
+        <!-- UI Buttons -->
+        <file>UI/start_button.png</file>
+        <file>UI/help_button.png</file>
+        <file>UI/back_button.png</file>
+        <file>UI/resume_button.png</file>
+        <file>UI/restart_button.png</file>
+        <file>UI/title_button.png</file>
     </qresource>
 </RCC>

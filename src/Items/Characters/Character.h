@@ -23,7 +23,8 @@ protected:
     
 private:
     QPointF targetPos;
-    const qreal moveSpeed{0.3};
+    qreal baseMoveSpeed{0.35};  // 基础速度
+    qreal currentMoveSpeed{0.35};  // 当前速度
     bool facingLeft{true};  // 默认朝左
 };
 

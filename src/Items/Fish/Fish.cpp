@@ -6,6 +6,7 @@ Fish::Fish(QGraphicsItem *parent, const QString &pixmapPath, FishType type, int 
 
 void Fish::grow(int amount) {
     size += amount;
-    double newScale = scale() + amount * 0.02;
+    // 每成长1次，缩放增加3%
+    double newScale = scale() * (1.0 + amount * 0.03);
     setScale(newScale);
 }
