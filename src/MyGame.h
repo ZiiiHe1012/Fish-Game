@@ -26,7 +26,6 @@ private slots:
 
 private:
     QGraphicsView *view;
-    QGraphicsView *pauseView;
     
     TitleScene *titleScene;
     HelpScene *helpScene;

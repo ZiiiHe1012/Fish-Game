@@ -7,22 +7,15 @@
 
 MyGame::MyGame(QWidget *parent) : QMainWindow(parent) {
     view = new QGraphicsView(this);
-    view->setFixedSize(1280, 720);  // 固定视图大小
+    view->setFixedSize(1280, 720);
     view->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     view->setFrameShape(QFrame::NoFrame);
     view->setMouseTracking(true);
     
-    pauseView = new QGraphicsView(this);
-    pauseView->setFixedSize(1280, 720);
-    pauseView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    pauseView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    pauseView->setFrameShape(QFrame::NoFrame);
-    pauseView->hide();
+    // 删除 pauseView 相关代码
     
     setCentralWidget(view);
-    
-    // 关键：设置窗口大小为固定值
     setFixedSize(1280, 720);
     
     // 初始化场景
@@ -36,6 +29,15 @@ MyGame::MyGame(QWidget *parent) : QMainWindow(parent) {
 }
 
 void MyGame::showTitleScene() {
+    // 清理战斗场景
+    if (battleScene) {
+        if (view->scene() == battleScene) {
+            view->setScene(nullptr);
+        }
+        delete battleScene;
+        battleScene = nullptr;
+    }
+    
     if (titleScene) {
         delete titleScene;
     }
@@ -45,7 +47,6 @@ void MyGame::showTitleScene() {
     
     view->setScene(titleScene);
     view->show();
-    pauseView->hide();
 }
 
 void MyGame::showHelpScene() {
@@ -68,37 +69,42 @@ void MyGame::showBattleScene() {
     
     view->setScene(battleScene);
     battleScene->startLoop();
-    pauseView->hide();
 }
 
 void MyGame::showPauseMenu() {
-    if (battleScene) {
-        battleScene->stopLoop();
-    }
+    if (!battleScene) return;
     
+    battleScene->stopLoop();
+    
+    // 在当前场景上添加暂停界面
     PauseScene *pauseScene = new PauseScene(this);
-    connect(pauseScene, &PauseScene::resumeGame, this, [this, pauseScene]() {
-        pauseView->hide();
+    
+    // 保存原场景
+    QGraphicsScene *originalScene = view->scene();
+    
+    // 恢复游戏
+    connect(pauseScene, &PauseScene::resumeGame, this, [this, pauseScene, originalScene]() {
+        view->setScene(originalScene);
         delete pauseScene;
         if (battleScene) {
             battleScene->startLoop();
         }
     });
+    
+    // 重新开始
     connect(pauseScene, &PauseScene::restartGame, this, [this, pauseScene]() {
-        pauseView->hide();
         delete pauseScene;
         restartGame();
     });
+    
+    // 回到标题
     connect(pauseScene, &PauseScene::backToTitle, this, [this, pauseScene]() {
-        pauseView->hide();
         delete pauseScene;
         showTitleScene();
     });
     
-    pauseView->setScene(pauseScene);
-    pauseView->setGeometry(view->geometry());
-    pauseView->show();
-    pauseView->raise();
+    // 切换到暂停场景
+    view->setScene(pauseScene);
 }
 
 void MyGame::showGameOverScene(bool victory) {
