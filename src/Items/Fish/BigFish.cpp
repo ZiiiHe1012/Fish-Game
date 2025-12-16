@@ -3,7 +3,7 @@
 
 BigFish::BigFish(QGraphicsItem *parent, bool moveRight) 
     : Fish(parent, 
-           moveRight ? ":/Items/Fish/big_fish_right.png" : ":/Items/Fish/big_fish.png",
+           moveRight ? ":/Items/Fish/big_fish_right.png" : ":/Items/Fish/big_fis_left.png",
            Fish::BIG, 10) {
     setScale(0.3);
     setZValue(5);

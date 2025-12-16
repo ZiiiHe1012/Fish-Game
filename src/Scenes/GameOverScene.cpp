@@ -4,10 +4,20 @@
 GameOverScene::GameOverScene(QObject *parent, bool victory, int score) : Scene(parent) {
     setSceneRect(0, 0, 1280, 720);
     
-    // 背景
+    // 背景 - 全屏缩放
     QString bgPath = victory ? ":/Scenes/victory_background.png" : ":/Scenes/gameover_background.png";
-    background = new QGraphicsPixmapItem(QPixmap(bgPath));
+    QPixmap bgPixmap(bgPath);
+    if (!bgPixmap.isNull()) {
+        background = new QGraphicsPixmapItem(bgPixmap.scaled(1280, 720, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+    } else {
+        // 纯色背景作为备用
+        background = new QGraphicsPixmapItem();
+        QPixmap colorBg(1280, 720);
+        colorBg.fill(victory ? QColor(50, 150, 50) : QColor(150, 50, 50));
+        background->setPixmap(colorBg);
+    }
     addItem(background);
+    background->setPos(0, 0);
     
     // 结果文本
     resultText = new QGraphicsTextItem(victory ? "胜利!" : "游戏结束");

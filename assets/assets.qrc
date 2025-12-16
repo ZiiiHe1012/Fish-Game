@@ -25,5 +25,6 @@
         <file>UI/resume_button.png</file>
         <file>UI/restart_button.png</file>
         <file>UI/title_button.png</file>
+        <file>UI/game_title.png</file>
     </qresource>
 </RCC>

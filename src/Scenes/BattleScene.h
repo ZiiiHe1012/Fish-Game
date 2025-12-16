@@ -40,6 +40,7 @@ private:
     void spawnSmallFish();
     void spawnBigFish();
     void checkCollisions();
+    void updateCameraView();  // 添加这个
     
     Map *map;
     Character *character;
@@ -52,6 +53,10 @@ private:
     qint64 bigFishSpawnTimer{0};
     qint64 smallFishSpawnInterval{2000};  // 小鱼生成间隔2秒
     qint64 bigFishSpawnInterval{5000};    // 大鱼生成间隔5秒
+
+    // 添加地图和视角相关
+    qreal mapWidth{2560};   // 地图宽度：1280 * 2
+    qreal mapHeight{1440};  // 地图高度：720 * 2
 };
 
 #endif

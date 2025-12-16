@@ -24,7 +24,7 @@ TitleScene::TitleScene(QObject *parent) : Scene(parent) {
     if (!titlePixmap.isNull()) {
         titleImage = new QGraphicsPixmapItem(titlePixmap);
         addItem(titleImage);
-        titleImage->setPos(640 - titleImage->boundingRect().width() / 2, 150);
+        titleImage->setPos(640 - titleImage->boundingRect().width() / 2, -100);
     } else {
         // 如果没有标题图片，用文字代替
         QGraphicsTextItem *titleText = new QGraphicsTextItem("大鱼吃小鱼");

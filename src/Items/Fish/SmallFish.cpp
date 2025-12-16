@@ -3,7 +3,7 @@
 
 SmallFish::SmallFish(QGraphicsItem *parent, bool moveRight) 
     : Fish(parent, 
-           moveRight ? ":/Items/Fish/small_fish_right.png" : ":/Items/Fish/small_fish.png",
+           moveRight ? ":/Items/Fish/small_fish_right.png" : ":/Items/Fish/small_fish_left.png",
            Fish::SMALL, 3) {
     setScale(0.1);
     setZValue(5);

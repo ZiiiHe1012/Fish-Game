@@ -4,9 +4,12 @@
 #include <QRandomGenerator>
 #include <QGraphicsSceneMouseEvent>
 #include <QDebug>
+#include <QGraphicsView>
+
 
 BattleScene::BattleScene(QObject *parent) : Scene(parent) {
-    setSceneRect(0, 0, 1280, 720);
+    // 设置更大的场景范围
+    setSceneRect(0, 0, mapWidth, mapHeight);
     
     // 背景
     map = new Battlefield();
@@ -15,28 +18,35 @@ BattleScene::BattleScene(QObject *parent) : Scene(parent) {
     if (map->getPixmapItem()) {
         QPixmap bgPixmap = map->getPixmapItem()->pixmap();
         if (!bgPixmap.isNull()) {
-            map->getPixmapItem()->setPixmap(bgPixmap.scaled(1280, 720, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
+            // 缩放背景到整个地图大小
+            map->getPixmapItem()->setPixmap(bgPixmap.scaled(mapWidth, mapHeight, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));
         }
     }
     map->setPos(0, 0);
     
     character = new Link();
     addItem(character);
-    character->setPos(640, 360);
+    // 玩家初始位置在地图中心
+    character->setPos(mapWidth / 2, mapHeight / 2);
 }
 
 void BattleScene::spawnSmallFish() {
+    if (!character) return;
+    
     auto rand = QRandomGenerator::global();
-    bool spawnFromLeft = rand->bounded(2) == 0;  // 改名更清晰
+    bool spawnFromLeft = rand->bounded(2) == 0;
     
     SmallFish *fish = new SmallFish(nullptr, spawnFromLeft);
     
+    // 在玩家视野边缘生成
+    QPointF playerPos = character->pos();
+    
     if (spawnFromLeft) {
-        // 从左边生成，往右游
-        fish->setPos(-50, rand->bounded(720));
+        // 从玩家左边生成
+        fish->setPos(playerPos.x() - 700, playerPos.y() + rand->bounded(-300, 300));
     } else {
-        // 从右边生成，往左游
-        fish->setPos(1330, rand->bounded(720));
+        // 从玩家右边生成
+        fish->setPos(playerPos.x() + 700, playerPos.y() + rand->bounded(-300, 300));
     }
     
     addItem(fish);
@@ -44,17 +54,22 @@ void BattleScene::spawnSmallFish() {
 }
 
 void BattleScene::spawnBigFish() {
+    if (!character) return;
+    
     auto rand = QRandomGenerator::global();
-    bool spawnFromLeft = rand->bounded(2) == 0;  // 改名更清晰
-
+    bool spawnFromLeft = rand->bounded(2) == 0;
+    
     BigFish *fish = new BigFish(nullptr, spawnFromLeft);
     
+    // 在玩家视野边缘生成
+    QPointF playerPos = character->pos();
+    
     if (spawnFromLeft) {
-        // 从左边生成，往右游
-        fish->setPos(-100, rand->bounded(720));
+        // 从玩家左边生成
+        fish->setPos(playerPos.x() - 700, playerPos.y() + rand->bounded(-300, 300));
     } else {
-        // 从右边生成，往左游
-        fish->setPos(1380, rand->bounded(720));
+        // 从玩家右边生成
+        fish->setPos(playerPos.x() + 700, playerPos.y() + rand->bounded(-300, 300));
     }
     
     addItem(fish);
@@ -67,7 +82,8 @@ void BattleScene::processInput() {
 
 void BattleScene::processMovement() {
     Scene::processMovement();
-
+    
+    // 累积时间
     smallFishSpawnTimer += deltaTime;
     bigFishSpawnTimer += deltaTime;
     
@@ -75,54 +91,56 @@ void BattleScene::processMovement() {
     if (smallFishSpawnTimer >= smallFishSpawnInterval) {
         spawnSmallFish();
         smallFishSpawnTimer = 0;
-        // 随机下次生成时间
-        smallFishSpawnInterval = QRandomGenerator::global()->bounded(500, 1500);
+        smallFishSpawnInterval = QRandomGenerator::global()->bounded(1500, 3000);
     }
     
     // 检查是否该生成大鱼
     if (bigFishSpawnTimer >= bigFishSpawnInterval) {
         spawnBigFish();
         bigFishSpawnTimer = 0;
-        // 随机下次生成时间
-        bigFishSpawnInterval = QRandomGenerator::global()->bounded(1000, 2000);
+        bigFishSpawnInterval = QRandomGenerator::global()->bounded(4000, 7000);
     }
-
+    
     if (character) {
         // 只有鼠标在场景中时才移动
         if (mouseInScene) {
             character->updateMovement(deltaTime);
         }
         
-        // 限制在屏幕内
+        // 限制玩家在地图范围内
         QPointF pos = character->pos();
         if (pos.x() < 0) pos.setX(0);
-        if (pos.x() > 1280) pos.setX(1280);
+        if (pos.x() > mapWidth) pos.setX(mapWidth);
         if (pos.y() < 0) pos.setY(0);
-        if (pos.y() > 720) pos.setY(720);
+        if (pos.y() > mapHeight) pos.setY(mapHeight);
         character->setPos(pos);
+        
+        // 视角跟随玩家 - 关键代码
+        updateCameraView();
     }
     
+    // 更新小鱼移动
     for (int i = smallFishes.size() - 1; i >= 0; i--) {
         SmallFish *fish = smallFishes[i];
         fish->updateMovement(deltaTime);
         
         QPointF pos = fish->pos();
-        // 只有完全离开屏幕很远才删除
-        if (pos.x() < -200 || pos.x() > 1480) {  // 扩大边界
+        // 超出地图范围删除
+        if (pos.x() < -200 || pos.x() > mapWidth + 200) {
             removeItem(fish);
             smallFishes.removeAt(i);
             delete fish;
         }
     }
     
-    // 更新大鱼移动 - 修改删除边界
+    // 更新大鱼移动
     for (int i = bigFishes.size() - 1; i >= 0; i--) {
         BigFish *fish = bigFishes[i];
         fish->updateMovement(deltaTime);
         
         QPointF pos = fish->pos();
-        // 只有完全离开屏幕很远才删除
-        if (pos.x() < -250 || pos.x() > 1930) {  // 扩大边界
+        // 超出地图范围删除
+        if (pos.x() < -250 || pos.x() > mapWidth + 250) {
             removeItem(fish);
             bigFishes.removeAt(i);
             delete fish;
@@ -198,9 +216,9 @@ void BattleScene::resetGame() {
     }
     bigFishes.clear();
     
-    // 重置玩家
+    // 重置玩家到地图中心
     if (character) {
-        character->setPos(640, 360);
+        character->setPos(mapWidth / 2, mapHeight / 2);
     }
     
     // 重置计时器
@@ -229,4 +247,34 @@ void BattleScene::enterEvent(QEvent *event) {
 
 void BattleScene::leaveEvent(QEvent *event) {
     mouseInScene = false;
+}
+
+void BattleScene::updateCameraView() {
+    if (!character) return;
+    
+    // 获取所有视图
+    QList<QGraphicsView*> viewsList = views();
+    if (viewsList.isEmpty()) return;
+    
+    QGraphicsView *view = viewsList.first();
+    
+    // 计算视图中心应该在的位置（跟随玩家）
+    QPointF playerPos = character->pos();
+    
+    // 视图大小
+    qreal viewWidth = 1280;
+    qreal viewHeight = 720;
+    
+    // 计算视图左上角位置
+    qreal viewX = playerPos.x() - viewWidth / 2;
+    qreal viewY = playerPos.y() - viewHeight / 2;
+    
+    // 限制视图不超出地图边界
+    if (viewX < 0) viewX = 0;
+    if (viewY < 0) viewY = 0;
+    if (viewX + viewWidth > mapWidth) viewX = mapWidth - viewWidth;
+    if (viewY + viewHeight > mapHeight) viewY = mapHeight - viewHeight;
+    
+    // 设置视图中心
+    view->centerOn(viewX + viewWidth / 2, viewY + viewHeight / 2);
 }
