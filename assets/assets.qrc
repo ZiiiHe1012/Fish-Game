@@ -7,6 +7,20 @@
         <file>Items/Fish/small_fish_right.png</file>
         <file>Items/Fish/big_fish_left.png</file>
         <file>Items/Fish/big_fish_right.png</file>
+        <file>Items/Fish/player_fish_left_1.png</file>
+        <file>Items/Fish/player_fish_left_2.png</file>
+        <file>Items/Fish/player_fish_left_3.png</file>
+        <file>Items/Fish/player_fish_left_4.png</file>
+        <file>Items/Fish/player_fish_left_5.png</file>
+        <file>Items/Fish/player_fish_left_6.png</file>
+        <file>Items/Fish/player_fish_left_7.png</file>
+        <file>Items/Fish/player_fish_right_1.png</file>
+        <file>Items/Fish/player_fish_right_2.png</file>
+        <file>Items/Fish/player_fish_right_3.png</file>
+        <file>Items/Fish/player_fish_right_4.png</file>
+        <file>Items/Fish/player_fish_right_5.png</file>
+        <file>Items/Fish/player_fish_right_6.png</file>
+        <file>Items/Fish/player_fish_right_7.png</file>
         
         <!-- Maps -->
         <file>Items/Maps/stage_background.bmp</file>
@@ -32,5 +46,18 @@
         <file>Music/battle_bgm.mp3</file>
         <file>Music/gameover_bgm.mp3</file>
         <file>Music/victory_bgm.mp3</file>
+        <file>Music/eat_sound.mp3</file>
+        <file>Music/hurt_sound.mp3</file>
+
+        <!-- Level Select -->
+        <file>Scenes/levelselect_background.png</file>
+        <file>Scenes/level1_intro_background.png</file>
+        <file>Scenes/level2_intro_background.png</file>
+        <file>Scenes/level3_intro_background.png</file>
+
+        <!-- Level Buttons -->
+        <file>UI/level1_button.png</file>
+        <file>UI/level2_button.png</file>
+        <file>UI/level3_button.png</file>
     </qresource>
 </RCC>

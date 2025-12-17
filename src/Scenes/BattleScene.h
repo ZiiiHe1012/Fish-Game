@@ -25,6 +25,8 @@ public:
     int getFishEaten() const { return fishEaten; }
     void resetGame();
     
+    void setLevel(int level) { currentLevel = level; }
+    
 signals:
     void pauseGame();
     void gameOver(bool victory);
@@ -50,8 +52,9 @@ private:
     QVector<BigFish*> bigFishes;
     int score{0};
     int fishEaten{0};  // 记录吃掉的小鱼数量
-    int health{100};        // 添加血量
-    int maxHealth{100};     // 添加最大血量
+    int health{100};        // 血量
+    int maxHealth{100};     // 最大血量
+    int currentLevel{1};  // 当前关卡
     bool mouseInScene{false};
 
     GameUI *gameUI{nullptr};  // 添加 UI
@@ -64,6 +67,9 @@ private:
     // 添加地图和视角相关
     qreal mapWidth{2560};   // 地图宽度：1280 * 2
     qreal mapHeight{1440};  // 地图高度：720 * 2
+
+    QGraphicsTextItem *playerNotification{nullptr};  // 玩家提示文字
+    qint64 notificationTimer{0};  // 提示显示计时器
 };
 
 #endif

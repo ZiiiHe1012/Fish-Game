@@ -21,6 +21,8 @@ MyGame::MyGame(QWidget *parent) : QMainWindow(parent) {
     // 初始化场景
     titleScene = nullptr;
     helpScene = nullptr;
+    levelSelectScene = nullptr;
+    levelIntroScene = nullptr;
     battleScene = nullptr;
     gameOverScene = nullptr;
     
@@ -110,4 +112,26 @@ void MyGame::resumeFromPause() {
 
 void MyGame::restartGame() {
     showBattleScene();
+}
+
+void MyGame::showLevelSelectScene() {
+    if (levelSelectScene) {
+        delete levelSelectScene;
+    }
+    levelSelectScene = new LevelSelectScene(this);
+    connect(levelSelectScene, &LevelSelectScene::levelSelected, this, &MyGame::showLevelIntroScene);
+    connect(levelSelectScene, &LevelSelectScene::backToTitle, this, &MyGame::showTitleScene);
+    
+    view->setScene(levelSelectScene);
+}
+
+void MyGame::showLevelIntroScene(int level) {
+    if (levelIntroScene) {
+        delete levelIntroScene;
+    }
+    levelIntroScene = new LevelIntroScene(this, level);
+    connect(levelIntroScene, &LevelIntroScene::startLevel, this, &MyGame::showBattleScene);
+    connect(levelIntroScene, &LevelIntroScene::backToLevelSelect, this, &MyGame::showLevelSelectScene);
+    
+    view->setScene(levelIntroScene);
 }

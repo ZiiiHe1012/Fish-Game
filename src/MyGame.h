@@ -9,6 +9,8 @@
 #include "Scenes/HelpScene.h"
 #include "Scenes/BattleScene.h"
 #include "Scenes/GameOverScene.h"
+#include "Scenes/LevelSelectScene.h"
+#include "Scenes/LevelIntroScene.h"
 
 class MyGame : public QMainWindow {
 Q_OBJECT
@@ -24,6 +26,8 @@ private slots:
     void showGameOverScene(bool victory);
     void restartGame();
     void resumeFromPause();
+    void showLevelSelectScene();
+    void showLevelIntroScene(int level);
 
 private:
     QGraphicsView *view;
@@ -32,8 +36,10 @@ private:
     HelpScene *helpScene;
     BattleScene *battleScene;
     GameOverScene *gameOverScene;
-    
-    void switchScene(Scene *scene);
+
+    LevelSelectScene *levelSelectScene;
+    LevelIntroScene *levelIntroScene;
+
 };
 
 #endif

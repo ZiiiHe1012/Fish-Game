@@ -57,6 +57,42 @@ void AudioManager::playVictoryMusic() {
     playMusic("qrc:/Music/victory_bgm.mp3", false, 0.75);
 }
 
+void AudioManager::playEatSound() {
+    // 临时播放音效，不影响背景音乐
+    QMediaPlayer *tempPlayer = new QMediaPlayer();
+    QAudioOutput *tempOutput = new QAudioOutput();
+    tempPlayer->setAudioOutput(tempOutput);
+    tempOutput->setVolume(0.7);
+    
+    tempPlayer->setSource(QUrl("qrc:/Music/eat_sound.mp3"));
+    tempPlayer->play();
+    
+    // 播放完后自动删除
+    connect(tempPlayer, &QMediaPlayer::playbackStateChanged, [tempPlayer, tempOutput](QMediaPlayer::PlaybackState state) {
+        if (state == QMediaPlayer::StoppedState) {
+            tempPlayer->deleteLater();
+            tempOutput->deleteLater();
+        }
+    });
+}
+
+void AudioManager::playHurtSound() {
+    QMediaPlayer *tempPlayer = new QMediaPlayer();
+    QAudioOutput *tempOutput = new QAudioOutput();
+    tempPlayer->setAudioOutput(tempOutput);
+    tempOutput->setVolume(0.7);
+    
+    tempPlayer->setSource(QUrl("qrc:/Music/hurt_sound.mp3"));
+    tempPlayer->play();
+    
+    connect(tempPlayer, &QMediaPlayer::playbackStateChanged, [tempPlayer, tempOutput](QMediaPlayer::PlaybackState state) {
+        if (state == QMediaPlayer::StoppedState) {
+            tempPlayer->deleteLater();
+            tempOutput->deleteLater();
+        }
+    });
+}
+
 void AudioManager::stopMusic() {
     musicPlayer->stop();
 }

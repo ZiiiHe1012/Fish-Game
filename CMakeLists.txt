@@ -54,6 +54,12 @@ add_executable(Fish src/main.cpp
         src/UI/GameUI.h
         src/Audio/AudioManager.cpp
         src/Audio/AudioManager.h
+        src/Scenes/LevelSelectScene.cpp
+        src/Scenes/LevelSelectScene.h
+        src/Scenes/LevelIntroScene.cpp
+        src/Scenes/LevelIntroScene.h
+        src/GameData/GameProgress.cpp
+        src/GameData/GameProgress.h
 )
         
 target_link_libraries(Fish

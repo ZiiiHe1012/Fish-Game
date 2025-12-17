@@ -1,4 +1,5 @@
 #include "BattleScene.h"
+#include "../GameData/GameProgress.h"
 #include "../Items/Characters/Link.h"
 #include "../Items/Maps/Battlefield.h"
 #include "../Audio/AudioManager.h"
@@ -11,6 +12,10 @@
 BattleScene::BattleScene(QObject *parent) : Scene(parent) {
     setSceneRect(0, 0, mapWidth, mapHeight);
     
+    // 应用道具效果
+    maxHealth = GameProgress::instance()->getMaxHealth();
+    health = maxHealth;
+
     // 播放战斗音乐
     AudioManager::instance()->playBattleMusic();
 
@@ -27,6 +32,7 @@ BattleScene::BattleScene(QObject *parent) : Scene(parent) {
     map->setPos(0, 0);
     
     character = new Link();
+    character->setSpeedMultiplier(GameProgress::instance()->getSpeedMultiplier());  // 应用速度倍数
     addItem(character);
     character->setPos(mapWidth / 2, mapHeight / 2);
     
@@ -34,6 +40,14 @@ BattleScene::BattleScene(QObject *parent) : Scene(parent) {
     gameUI = new GameUI(this, this);
     gameUI->updateProgress(0, 20);
     gameUI->updateHealth(health, maxHealth);
+
+    playerNotification = new QGraphicsTextItem("");
+    playerNotification->setDefaultTextColor(Qt::yellow);
+    QFont notifyFont("Arial", 16, QFont::Bold);
+    playerNotification->setFont(notifyFont);
+    playerNotification->setZValue(11000);
+    addItem(playerNotification);
+    playerNotification->setVisible(false);
 }
 
 void BattleScene::spawnSmallFish() {
@@ -115,10 +129,8 @@ void BattleScene::processMovement() {
         
         // 限制玩家在地图范围内
         QPointF pos = character->pos();
-        if (pos.x() < 0) pos.setX(0);
-        if (pos.x() > mapWidth) pos.setX(mapWidth);
-        if (pos.y() < 0) pos.setY(0);
-        if (pos.y() > mapHeight) pos.setY(mapHeight);
+        pos.setX(qBound(0.0, pos.x(), mapWidth - 100));
+        pos.setY(qBound(0.0, pos.y(), mapHeight - 100));
         character->setPos(pos);
         
         // 视角跟随玩家 - 关键代码
@@ -153,6 +165,20 @@ void BattleScene::processMovement() {
             delete fish;
         }
     }
+
+    if (character && playerNotification) {
+        if (playerNotification->isVisible()) {
+            QPointF playerPos = character->pos();
+            playerNotification->setPos(playerPos.x() - playerNotification->boundingRect().width() / 2 - 10, 
+                                    playerPos.y() - 120);
+            
+            notificationTimer -= deltaTime;
+            if (notificationTimer <= 0) {
+                playerNotification->setVisible(false);
+                playerNotification->setDefaultTextColor(Qt::yellow);
+            }
+        }
+    }
 }
 
 void BattleScene::keyPressEvent(QKeyEvent *event) {
@@ -175,62 +201,92 @@ void BattleScene::checkCollisions() {
     
     // 检测与小鱼的碰撞
     for (int i = smallFishes.size() - 1; i >= 0; i--) {
-        SmallFish *fish = smallFishes[i];
-        QRectF fishRect = fish->sceneBoundingRect();
+    SmallFish *fish = smallFishes[i];
+    QRectF fishRect = fish->sceneBoundingRect();
+    
+    if (playerRect.intersects(fishRect) && playerSize > fish->getSize()) {
+        score++;
+        fishEaten++;
+        character->grow(1);
+
+        AudioManager::instance()->playEatSound();
+
+        // 吃鱼动画
+        character->playEatingAnimation();
         
-        if (playerRect.intersects(fishRect) && playerSize > fish->getSize()) {
-            score++;
-            fishEaten++;
-            character->grow(1);
-            removeItem(fish);
-            smallFishes.removeAt(i);
-            delete fish;
-            
-            // 更新进度条
-            if (gameUI) {
-                gameUI->updateProgress(score, 20);
-            }
-            
-            qDebug() << "Score:" << score << "Fish eaten:" << fishEaten;
-            
-            if (score >= 20) {
-                emit gameOver(true);
-            }
+        // // 显示"变大！"
+        // playerNotification->setPlainText("变大！");
+        // playerNotification->setDefaultTextColor(Qt::yellow);
+        // QPointF playerPos = character->pos();  // 添加这行
+        // playerNotification->setPos(playerPos.x() - playerNotification->boundingRect().width() / 2 - 10, 
+        //                            playerPos.y() - 120);  // 添加这行
+        // playerNotification->setVisible(true);
+        // notificationTimer = 1000;
+        
+        removeItem(fish);
+        smallFishes.removeAt(i);
+        delete fish;
+        
+        if (gameUI) {
+            gameUI->updateProgress(score, 20);
+        }
+        
+        qDebug() << "Score:" << score << "Fish eaten:" << fishEaten;
+        
+        if (score >= 20) {
+            GameProgress::instance()->completeLevel(currentLevel);  // 记录通关
+            emit gameOver(true);
         }
     }
+}
     
     // 检测与大鱼的碰撞
-    for (int i = bigFishes.size() - 1; i >= 0; i--) {
-        BigFish *fish = bigFishes[i];
-        QRectF fishRect = fish->sceneBoundingRect();
+for (int i = bigFishes.size() - 1; i >= 0; i--) {
+    BigFish *fish = bigFishes[i];
+    QRectF fishRect = fish->sceneBoundingRect();
+    
+    if (playerRect.intersects(fishRect)) {
+        // 碰到大鱼扣血
+        health -= 50;
+            
+        AudioManager::instance()->playHurtSound();
+
+        // 红色掉血滤镜
+        character->applyRedTint();
+
+        //  // 显示"哎呦！"
+        // playerNotification->setPlainText("哎呦！");
+        // playerNotification->setDefaultTextColor(Qt::red);
+        // QPointF playerPos = character->pos();  // 添加这行
+        // playerNotification->setPos(playerPos.x() - playerNotification->boundingRect().width() / 2 - 10, 
+        //                            playerPos.y() - 120);  // 添加这行
+        // playerNotification->setVisible(true);
+        // notificationTimer = 1000;
+
+        if (gameUI) {
+            gameUI->updateHealth(health, maxHealth);
+        }
         
-        if (playerRect.intersects(fishRect)) {
-            // 碰到大鱼扣血
-            health -= 50;
-            
-            if (gameUI) {
-                gameUI->updateHealth(health, maxHealth);
-            }
-            
-            // 击退大鱼（删除并重新生成）
-            removeItem(fish);
-            bigFishes.removeAt(i);
-            delete fish;
-            
-            qDebug() << "Hit by big fish! Health:" << health;
-            
-            if (health <= 0) {
-                emit gameOver(false);
-            }
+        // 击退大鱼（删除并重新生成）
+        removeItem(fish);
+        bigFishes.removeAt(i);
+        delete fish;
+        
+        qDebug() << "Hit by big fish! Health:" << health;
+        
+        if (health <= 0) {
+            emit gameOver(false);
         }
     }
+}
 }
 
 // 添加重置游戏方法
 void BattleScene::resetGame() {
     score = 0;
     fishEaten = 0;
-    health = 100;  // 重置血量
+    maxHealth = GameProgress::instance()->getMaxHealth();
+    health = maxHealth;
     
     // 清除所有鱼
     for (SmallFish *fish : smallFishes) {

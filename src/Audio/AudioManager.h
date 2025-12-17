@@ -14,6 +14,8 @@ public:
     void playBattleMusic();
     void playGameOverMusic();
     void playVictoryMusic();
+    void playEatSound(); 
+    void playHurtSound();  
     void stopMusic();
     
     void setVolume(qreal volume);  // 0.0 - 1.0

@@ -54,11 +54,11 @@ HelpScene::HelpScene(QObject *parent) : Scene(parent) {
     
     // 4. 返回按钮 - 放在下方
     backButton = new UIButton(":/UI/back_button.png");
-    backButton->setScale(0.3);  // 调整按钮大小
+    backButton->setScale(0.03);  // 调整按钮大小
     addItem(backButton);
     
     // 调整位置：水平居中，Y轴设为 520
-    backButton->setPos(640 - backButton->boundingRect().width() * 0.8 / 2 + 360, 350);
+    backButton->setPos(640 - backButton->boundingRect().width() * 0.8 / 2 + 1100, 350);
     
     connect(backButton, &UIButton::clicked, this, &HelpScene::backToTitle);
 }

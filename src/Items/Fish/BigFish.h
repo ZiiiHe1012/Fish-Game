@@ -16,7 +16,8 @@ private:
     QPointF velocity;
     qint64 changeDirectionTimer{0};
     bool moveRight;  // 添加：记住初始方向
-    qreal chaseRange{300};  // 追踪范围
+    bool facingLeft{false};  // 添加朝向标记
+    qreal chaseRange{400};  // 追踪范围
     qreal chaseSpeed{0.15};  // 追踪速度
 };
 

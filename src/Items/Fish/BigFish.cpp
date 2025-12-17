@@ -3,11 +3,12 @@
 
 BigFish::BigFish(QGraphicsItem *parent, bool moveRight) 
     : Fish(parent, 
-           moveRight ? ":/Items/Fish/big_fish_right.png" : ":/Items/Fish/big_fis_left.png",
+           moveRight ? ":/Items/Fish/big_fish_right.png" : ":/Items/Fish/big_fish_left.png",
            Fish::BIG, 10) {
     setScale(0.3);
     setZValue(5);
-    
+    facingLeft = !moveRight;
+
     qDebug() << "BigFish created, moveRight:" << moveRight;  // 添加调试
 
 
@@ -51,7 +52,23 @@ void BigFish::updateMovement(qint64 deltaTime, const QPointF &playerPos) {
             velocity = QPointF(-speedX, 0);
         }
     }
-    
+
+    if (velocity.x() < 0 && !facingLeft) {
+        // 需要朝左
+        facingLeft = true;
+        if (pixmapItem) {
+            pixmapItem->setPixmap(QPixmap(":/Items/Fish/big_fish_left.png"));
+            pixmapItem->setShapeMode(QGraphicsPixmapItem::MaskShape);
+        }
+    } else if (velocity.x() > 0 && facingLeft) {
+        // 需要朝右
+        facingLeft = false;
+        if (pixmapItem) {
+            pixmapItem->setPixmap(QPixmap(":/Items/Fish/big_fish_right.png"));
+            pixmapItem->setShapeMode(QGraphicsPixmapItem::MaskShape);
+        }
+    }
+
     setPos(pos() + velocity * deltaTime);
 }
 

@@ -27,7 +27,6 @@ void PlayerFish::setFacingRight() {
 QRectF PlayerFish::boundingRect() const {
     if (pixmapItem) {
         QRectF rect = pixmapItem->boundingRect();
-        // 缩小碰撞体积：宽度和高度各缩小到70%
         qreal shrink = 0.7;
         qreal newWidth = rect.width() * shrink;
         qreal newHeight = rect.height() * shrink;
