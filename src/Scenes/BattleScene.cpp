@@ -140,13 +140,14 @@ void BattleScene::processMovement() {
     }
     
     // 更新大鱼移动
+    QPointF playerPos = character ? character->pos() : QPointF(0, 0);
     for (int i = bigFishes.size() - 1; i >= 0; i--) {
         BigFish *fish = bigFishes[i];
-        fish->updateMovement(deltaTime);
+        fish->updateMovement(deltaTime, playerPos);  // 传入玩家位置
         
         QPointF pos = fish->pos();
-        // 超出地图范围删除
-        if (pos.x() < -250 || pos.x() > mapWidth + 250) {
+        if (pos.x() < -250 || pos.x() > mapWidth + 250 || 
+            pos.y() < -250 || pos.y() > mapHeight + 250) {  // 也检查Y坐标
             removeItem(fish);
             bigFishes.removeAt(i);
             delete fish;
@@ -204,48 +205,22 @@ void BattleScene::checkCollisions() {
         QRectF fishRect = fish->sceneBoundingRect();
         
         if (playerRect.intersects(fishRect)) {
-            if (fishEaten >= 10) {
-                // 吃够10条小鱼，可以吃大鱼
-                if (playerSize > fish->getSize()) {
-                    score += 3;
-                    character->grow(2);
-                    removeItem(fish);
-                    bigFishes.removeAt(i);
-                    delete fish;
-                    
-                    // 更新进度条
-                    if (gameUI) {
-                        gameUI->updateProgress(score, 20);
-                    }
-                    
-                    qDebug() << "Ate big fish! Score:" << score;
-                    
-                    if (score >= 20) {
-                        emit gameOver(true);
-                    }
-                }
-            } else {
-                // 没吃够10条小鱼，碰到大鱼扣血
-                if (playerSize < fish->getSize()) {
-                    health -= 50;  // 扣一半血
-                    
-                    // 更新血量条
-                    if (gameUI) {
-                        gameUI->updateHealth(health, maxHealth);
-                    }
-                    
-                    // 击退大鱼（删除并重新生成）
-                    removeItem(fish);
-                    bigFishes.removeAt(i);
-                    delete fish;
-                    
-                    qDebug() << "Hit by big fish! Health:" << health;
-                    
-                    // 血量归零才游戏失败
-                    if (health <= 0) {
-                        emit gameOver(false);
-                    }
-                }
+            // 碰到大鱼扣血
+            health -= 50;
+            
+            if (gameUI) {
+                gameUI->updateHealth(health, maxHealth);
+            }
+            
+            // 击退大鱼（删除并重新生成）
+            removeItem(fish);
+            bigFishes.removeAt(i);
+            delete fish;
+            
+            qDebug() << "Hit by big fish! Health:" << health;
+            
+            if (health <= 0) {
+                emit gameOver(false);
             }
         }
     }

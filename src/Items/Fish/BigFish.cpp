@@ -27,7 +27,31 @@ BigFish::BigFish(QGraphicsItem *parent, bool moveRight)
     }
 }
 
-void BigFish::updateMovement(qint64 deltaTime) {
+void BigFish::updateMovement(qint64 deltaTime, const QPointF &playerPos) {
+    // 计算与玩家的距离
+    qreal distance = QLineF(pos(), playerPos).length();
+    
+    if (distance < chaseRange) {
+        // 在追踪范围内：追踪玩家
+        QPointF direction = playerPos - pos();
+        qreal dist = qSqrt(direction.x() * direction.x() + direction.y() * direction.y());
+        
+        if (dist > 0) {
+            direction /= dist;  // 归一化
+            velocity = direction * chaseSpeed;
+        }
+    } else {
+        // 超出范围：恢复原来的横向移动
+        auto rand = QRandomGenerator::global();
+        qreal speedX = (rand->bounded(80) + 40) / 1000.0;
+        
+        if (moveRight) {
+            velocity = QPointF(speedX, 0);
+        } else {
+            velocity = QPointF(-speedX, 0);
+        }
+    }
+    
     setPos(pos() + velocity * deltaTime);
 }
 
@@ -44,3 +68,4 @@ QRectF BigFish::boundingRect() const {
     }
     return QRectF();
 }
+
