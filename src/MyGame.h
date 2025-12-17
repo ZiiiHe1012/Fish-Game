@@ -40,6 +40,7 @@ private:
     LevelSelectScene *levelSelectScene;
     LevelIntroScene *levelIntroScene;
 
+    int currentLevel{1};
 };
 
 #endif

@@ -28,7 +28,7 @@ BigFish::BigFish(QGraphicsItem *parent, bool moveRight)
     }
 }
 
-void BigFish::updateMovement(qint64 deltaTime, const QPointF &playerPos) {
+void BigFish::updateMovement(qint64 deltaTime, const QPointF &playerPos, int playerSize) {
     // 计算与玩家的距离
     qreal distance = QLineF(pos(), playerPos).length();
     
@@ -39,7 +39,13 @@ void BigFish::updateMovement(qint64 deltaTime, const QPointF &playerPos) {
         
         if (dist > 0) {
             direction /= dist;  // 归一化
-            velocity = direction * chaseSpeed;
+            
+            qreal sizeMultiplier = 1.0 - ((playerSize - 5) / 50.0);
+            if (sizeMultiplier < 0.5) sizeMultiplier = 0.5;  // 最低降至 50%
+            
+            qreal actualChaseSpeed = baseChaseSpeed * sizeMultiplier;
+            
+            velocity = direction * actualChaseSpeed;
         }
     } else {
         // 超出范围：恢复原来的横向移动
@@ -54,14 +60,12 @@ void BigFish::updateMovement(qint64 deltaTime, const QPointF &playerPos) {
     }
 
     if (velocity.x() < 0 && !facingLeft) {
-        // 需要朝左
         facingLeft = true;
         if (pixmapItem) {
             pixmapItem->setPixmap(QPixmap(":/Items/Fish/big_fish_left.png"));
             pixmapItem->setShapeMode(QGraphicsPixmapItem::MaskShape);
         }
     } else if (velocity.x() > 0 && facingLeft) {
-        // 需要朝右
         facingLeft = false;
         if (pixmapItem) {
             pixmapItem->setPixmap(QPixmap(":/Items/Fish/big_fish_right.png"));

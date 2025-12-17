@@ -7,6 +7,8 @@
 #include "../Items/Maps/Map.h"
 #include "../Items/Characters/Character.h"
 #include "../Items/Fish/SmallFish.h"
+#include "../Items/Fish/MediumFish.h"
+#include "../Items/Fish/GoldenFish.h"
 #include "../Items/Fish/BigFish.h"
 #include "../UI/GameUI.h"
 #include <QVector>
@@ -25,7 +27,10 @@ public:
     int getFishEaten() const { return fishEaten; }
     void resetGame();
     
-    void setLevel(int level) { currentLevel = level; }
+    void setLevel(int level) { 
+        currentLevel = level; 
+        initializeLevel();  // 添加初始化函数
+    }
     
 signals:
     void pauseGame();
@@ -42,34 +47,53 @@ protected:
     
 private:
     void spawnSmallFish();
+    void spawnMediumFish();
+    void spawnGoldenFish();
     void spawnBigFish();
     void checkCollisions();
     void updateCameraView();
+    void initializeLevel();
+
     
     Map *map;
     Character *character;
     QVector<SmallFish*> smallFishes;
+    QVector<MediumFish*> mediumFishes;
+    QVector<GoldenFish*> goldenFishes;
     QVector<BigFish*> bigFishes;
     int score{0};
-    int fishEaten{0};  // 记录吃掉的小鱼数量
-    int health{100};        // 血量
-    int maxHealth{100};     // 最大血量
-    int currentLevel{1};  // 当前关卡
+    int fishEaten{0};
+    int health{100};
+    int maxHealth{100};
+    int currentLevel{1};
     bool mouseInScene{false};
 
-    GameUI *gameUI{nullptr};  // 添加 UI
+    GameUI *gameUI{nullptr};
 
     qint64 smallFishSpawnTimer{0};
+    qint64 mediumFishSpawnTimer{0};
+    qint64 goldenFishSpawnTimer{0};
     qint64 bigFishSpawnTimer{0};
-    qint64 smallFishSpawnInterval{2000};  // 小鱼生成间隔2秒
-    qint64 bigFishSpawnInterval{5000};    // 大鱼生成间隔5秒
+    qint64 smallFishSpawnInterval{2000};
+    qint64 mediumFishSpawnInterval{4000};
+    qint64 goldenFishSpawnInterval{15000};
+    qint64 bigFishSpawnInterval{5000};
 
-    // 添加地图和视角相关
-    qreal mapWidth{2560};   // 地图宽度：1280 * 2
-    qreal mapHeight{1440};  // 地图高度：720 * 2
+    qint64 goldenFishEffectTimer{0};
+    bool goldenFishEffectActive{false};
+    qreal originalScale{0.2};
 
-    QGraphicsTextItem *playerNotification{nullptr};  // 玩家提示文字
-    qint64 notificationTimer{0};  // 提示显示计时器
+    qreal mapWidth{2560};
+    qreal mapHeight{1440};
+
+    QGraphicsTextItem *playerNotification{nullptr};
+    qint64 notificationTimer{0};
+
+    // 第三关相关
+    qint64 survivalTimer{0};  // 存活时间
+    qint64 autoHurtTimer{0};  // 自动扣血计时器
+    qint64 autoHurtInterval{1500};  // 每3秒扣血一次
+    int autoHurtAmount{5};  // 每次扣血量
 };
 
 #endif

@@ -21,10 +21,16 @@
         <file>Items/Fish/player_fish_right_5.png</file>
         <file>Items/Fish/player_fish_right_6.png</file>
         <file>Items/Fish/player_fish_right_7.png</file>
+        <file>Items/Fish/medium_fish_left.png</file>
+        <file>Items/Fish/medium_fish_right.png</file>
+        <file>Items/Fish/golden_fish_left.png</file>
+        <file>Items/Fish/golden_fish_right.png</file>
         
         <!-- Maps -->
         <file>Items/Maps/stage_background.bmp</file>
-        
+        <file>Items/Maps/stage_background_level2.bmp</file>
+        <file>Items/Maps/stage_background_level3.bmp</file>
+
         <!-- Scenes -->
         <file>Scenes/title_background.png</file>
         <file>Scenes/help_background.png</file>

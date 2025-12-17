@@ -61,18 +61,6 @@ void MyGame::showHelpScene() {
     view->setScene(helpScene);
 }
 
-void MyGame::showBattleScene() {
-    if (battleScene) {
-        delete battleScene;
-    }
-    battleScene = new BattleScene(this);
-    connect(battleScene, &BattleScene::pauseGame, this, &MyGame::showPauseMenu);
-    connect(battleScene, &BattleScene::gameOver, this, &MyGame::showGameOverScene);
-    
-    view->setScene(battleScene);
-    battleScene->startLoop();
-}
-
 void MyGame::showPauseMenu() {
     if (battleScene) {
         battleScene->stopLoop();
@@ -96,7 +84,7 @@ void MyGame::showGameOverScene(bool victory) {
     if (gameOverScene) {
         delete gameOverScene;
     }
-    gameOverScene = new GameOverScene(this, victory, score);
+    gameOverScene = new GameOverScene(this, victory, score, currentLevel);  // 传入 currentLevel
     connect(gameOverScene, &GameOverScene::restartGame, this, &MyGame::restartGame);
     connect(gameOverScene, &GameOverScene::backToTitle, this, &MyGame::showTitleScene);
     
@@ -114,6 +102,19 @@ void MyGame::restartGame() {
     showBattleScene();
 }
 
+void MyGame::showLevelIntroScene(int level) {
+    currentLevel = level;  // 保存当前关卡
+    
+    if (levelIntroScene) {
+        delete levelIntroScene;
+    }
+    levelIntroScene = new LevelIntroScene(this, level);
+    connect(levelIntroScene, &LevelIntroScene::startLevel, this, &MyGame::showBattleScene);
+    connect(levelIntroScene, &LevelIntroScene::backToLevelSelect, this, &MyGame::showLevelSelectScene);
+    
+    view->setScene(levelIntroScene);
+}
+
 void MyGame::showLevelSelectScene() {
     if (levelSelectScene) {
         delete levelSelectScene;
@@ -125,13 +126,16 @@ void MyGame::showLevelSelectScene() {
     view->setScene(levelSelectScene);
 }
 
-void MyGame::showLevelIntroScene(int level) {
-    if (levelIntroScene) {
-        delete levelIntroScene;
+void MyGame::showBattleScene() {
+    if (battleScene) {
+        delete battleScene;
     }
-    levelIntroScene = new LevelIntroScene(this, level);
-    connect(levelIntroScene, &LevelIntroScene::startLevel, this, &MyGame::showBattleScene);
-    connect(levelIntroScene, &LevelIntroScene::backToLevelSelect, this, &MyGame::showLevelSelectScene);
+    battleScene = new BattleScene(this);
+    battleScene->setLevel(currentLevel);  
     
-    view->setScene(levelIntroScene);
+    connect(battleScene, &BattleScene::pauseGame, this, &MyGame::showPauseMenu);
+    connect(battleScene, &BattleScene::gameOver, this, &MyGame::showGameOverScene);
+    
+    view->setScene(battleScene);
+    battleScene->startLoop();
 }

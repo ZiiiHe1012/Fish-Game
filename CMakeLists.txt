@@ -32,12 +32,20 @@ add_executable(Fish src/main.cpp
         src/Items/Maps/Map.h
         src/Items/Maps/Battlefield.cpp
         src/Items/Maps/Battlefield.h
+        src/Items/Maps/BattlefieldLevel2.cpp
+        src/Items/Maps/BattlefieldLevel2.h
+        src/Items/Maps/BattlefieldLevel3.cpp
+        src/Items/Maps/BattlefieldLevel3.h
         src/Items/Fish/Fish.cpp
         src/Items/Fish/Fish.h
         src/Items/Fish/PlayerFish.cpp
         src/Items/Fish/PlayerFish.h
         src/Items/Fish/SmallFish.cpp
         src/Items/Fish/SmallFish.h
+        src/Items/Fish/MediumFish.cpp
+        src/Items/Fish/MediumFish.h
+        src/Items/Fish/GoldenFish.cpp
+        src/Items/Fish/GoldenFish.h
         src/Items/Fish/BigFish.cpp
         src/Items/Fish/BigFish.h
         src/UI/UIButton.cpp

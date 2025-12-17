@@ -2,7 +2,9 @@
 #include "../Audio/AudioManager.h"
 #include <QFont>
 
-GameOverScene::GameOverScene(QObject *parent, bool victory, int score) : Scene(parent) {
+GameOverScene::GameOverScene(QObject *parent, bool victory, int score, int level) 
+    : Scene(parent) {
+    currentLevel = level;  
     setSceneRect(0, 0, 1280, 720);
     
     // 根据胜利/失败播放不同音乐
@@ -43,17 +45,36 @@ GameOverScene::GameOverScene(QObject *parent, bool victory, int score) : Scene(p
     addItem(scoreText);
     scoreText->setPos(640 - scoreText->boundingRect().width() / 2, 280);
     
+    // 额外文本（仅关卡1和2显示）
+    if (currentLevel == 1 || currentLevel == 2) {
+        QString extraMessage;
+        if (currentLevel == 1) {
+            extraMessage = victory ? "恭喜通关！获得道具：鲨鱼鳍（速度+25%）" : "";
+        } else if (currentLevel == 2) {
+            extraMessage = victory ? "恭喜通关！获得道具：护身符（血量上限150）" : "";
+        }else if (currentLevel == 3) {
+            extraMessage = victory ? "恭喜通关游戏！" : "";
+        }
+        
+        extraText = new QGraphicsTextItem(extraMessage);
+        extraText->setDefaultTextColor(Qt::yellow);
+        QFont extraFont("Arial", 24);
+        extraText->setFont(extraFont);
+        addItem(extraText);
+        extraText->setPos(640 - extraText->boundingRect().width() / 2, 340);
+    }
+    
     // 重新开始按钮
     restartButton = new UIButton(":/UI/restart_button.png");
-    restartButton->setScale(0.58);  // 调整按钮大小
+    restartButton->setScale(0.58);
     addItem(restartButton);
-    restartButton->setPos(640 - restartButton->boundingRect().width() * 0.58 / 2, 400);
+    restartButton->setPos(640 - restartButton->boundingRect().width() * 0.58 / 2, 420);
     connect(restartButton, &UIButton::clicked, this, &GameOverScene::restartGame);
     
     // 回到标题按钮
     titleButton = new UIButton(":/UI/title_button.png");
     titleButton->setScale(0.058);
     addItem(titleButton);
-    titleButton->setPos(640 - titleButton->boundingRect().width() * 0.058 / 2, 500);
+    titleButton->setPos(640 - titleButton->boundingRect().width() * 0.058 / 2, 520);
     connect(titleButton, &UIButton::clicked, this, &GameOverScene::backToTitle);
 }

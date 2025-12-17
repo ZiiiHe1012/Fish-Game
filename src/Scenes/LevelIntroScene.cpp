@@ -34,11 +34,11 @@ LevelIntroScene::LevelIntroScene(QObject *parent, int level)
     // 关卡描述
     QString description;
     if (level == 1) {
-        description = "目标：吃掉20条小鱼\n鱼类：金鱼(可吃) 鲨鱼(敌人 会进行追逐)\n";
+        description = "目标：得到20分\n鱼类：金鱼(可吃) 鲨鱼(敌人 无法被吃 会进行追逐)\n";
     } else if (level == 2) {
-        description = "关卡2描述\n（待开发）";
+        description = "目标：得到50分\n新增鱼类：热带鱼(需成长后可吃) 金盒鱼(吃后体型翻倍8秒)\n";
     } else if (level == 3) {
-        description = "关卡3描述\n（待开发）";
+        description = "目标：存活60秒\n机制：每1.5秒自动扣5血 只有吃鱼才能回血！\n";
     }
     
     descText = new QGraphicsTextItem(description);

@@ -45,6 +45,14 @@ GameUI::GameUI(QGraphicsScene *scene, QObject *parent)
     healthText->setFont(font);
     healthText->setZValue(10002);
     scene->addItem(healthText);
+
+    timerText = new QGraphicsTextItem("时间: 0s");
+    timerText->setDefaultTextColor(Qt::white);
+    QFont timerFont("Arial", 20, QFont::Bold);
+    timerText->setFont(timerFont);
+    timerText->setZValue(10002);
+    scene->addItem(timerText);
+    timerText->setVisible(false);
 }
 
 void GameUI::updateProgress(int current, int total) {
@@ -80,4 +88,15 @@ void GameUI::updatePosition(const QPointF &viewTopLeft) {
     healthBarBg->setPos(viewTopLeft.x() + 1010, viewTopLeft.y() + 20);
     healthBarFill->setPos(viewTopLeft.x() + 1010, viewTopLeft.y() + 20);
     healthText->setPos(viewTopLeft.x() + 1090, viewTopLeft.y() + 23);
+
+    timerText->setPos(viewTopLeft.x() + 640 - timerText->boundingRect().width() / 2, 
+                      viewTopLeft.y() + 20);
+}
+
+void GameUI::updateTimer(int seconds) {
+    timerText->setPlainText(QString("时间: %1s").arg(seconds));
+}
+
+void GameUI::showTimer(bool show) {
+    timerText->setVisible(show);
 }

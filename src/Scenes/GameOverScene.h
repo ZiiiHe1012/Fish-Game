@@ -7,8 +7,7 @@
 class GameOverScene : public Scene {
     Q_OBJECT
 public:
-    explicit GameOverScene(QObject *parent, bool victory, int score);
-    
+    explicit GameOverScene(QObject *parent, bool victory, int score, int level);    
 signals:
     void restartGame();
     void backToTitle();
@@ -17,8 +16,10 @@ private:
     QGraphicsPixmapItem *background;
     QGraphicsTextItem *resultText;
     QGraphicsTextItem *scoreText;
+    QGraphicsTextItem *extraText;
     UIButton *restartButton;
     UIButton *titleButton;
+    int currentLevel;
 };
 
 #endif

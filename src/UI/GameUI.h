@@ -14,6 +14,8 @@ public:
     void updateProgress(int current, int total);
     void updateHealth(int current, int max);
     void updatePosition(const QPointF &viewTopLeft);
+    void updateTimer(int seconds);
+    void showTimer(bool show);
     
 private:
     QGraphicsRectItem *progressBarBg;
@@ -23,7 +25,8 @@ private:
     QGraphicsRectItem *healthBarBg;
     QGraphicsRectItem *healthBarFill;
     QGraphicsTextItem *healthText;
-    
+    QGraphicsTextItem *timerText;
+
     QGraphicsScene *scene;
 };
 
