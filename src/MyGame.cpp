@@ -44,7 +44,7 @@ void MyGame::showTitleScene() {
         delete titleScene;
     }
     titleScene = new TitleScene(this);
-    connect(titleScene, &TitleScene::startGame, this, &MyGame::showBattleScene);
+    connect(titleScene, &TitleScene::startGame, this, &MyGame::showLevelSelectScene);
     connect(titleScene, &TitleScene::showHelp, this, &MyGame::showHelpScene);
     
     view->setScene(titleScene);
