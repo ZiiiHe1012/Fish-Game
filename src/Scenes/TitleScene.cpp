@@ -8,7 +8,7 @@ TitleScene::TitleScene(QObject *parent) : Scene(parent) {
     // 播放标题音乐
     AudioManager::instance()->playTitleMusic();
 
-    // 背景 - 缩放到场景大小
+    // 背景 缩放到场景大小
     QPixmap bgPixmap(":/Scenes/title_background.png");
     if (bgPixmap.isNull()) {
         // 如果图片不存在，创建纯色背景

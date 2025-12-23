@@ -1,9 +1,5 @@
-//
-// Created by gerw on 8/21/24.
-//
-
-#ifndef QT_PROGRAMMING_2024_MAP_H
-#define QT_PROGRAMMING_2024_MAP_H
+#ifndef MAP_H
+#define MAP_H
 
 #include <QGraphicsScene>
 #include <QPointF>
@@ -21,4 +17,4 @@ public:
 };
 
 
-#endif //QT_PROGRAMMING_2024_MAP_H
+#endif

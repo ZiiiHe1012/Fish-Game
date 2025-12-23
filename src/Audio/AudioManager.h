@@ -18,7 +18,7 @@ public:
     void playHurtSound();  
     void stopMusic();
     
-    void setVolume(qreal volume);  // 0.0 - 1.0
+    void setVolume(qreal volume);
     
 private:
     explicit AudioManager(QObject *parent = nullptr);

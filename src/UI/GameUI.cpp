@@ -7,7 +7,7 @@
 GameUI::GameUI(QGraphicsScene *scene, QObject *parent) 
     : QObject(parent), scene(scene) {
     
-    // === 进度条（左上角）===
+    // 进度条（左上角）
     progressBarBg = new QGraphicsRectItem(0, 0, 250, 30);
     progressBarBg->setBrush(QBrush(QColor(50, 50, 50, 200)));
     progressBarBg->setPen(QPen(Qt::white, 2));
@@ -27,7 +27,7 @@ GameUI::GameUI(QGraphicsScene *scene, QObject *parent)
     progressText->setZValue(10002);
     scene->addItem(progressText);
     
-    // === 血量条（右上角）===
+    // 血量条（右上角）
     healthBarBg = new QGraphicsRectItem(0, 0, 250, 30);
     healthBarBg->setBrush(QBrush(QColor(50, 50, 50, 200)));
     healthBarBg->setPen(QPen(Qt::white, 2));

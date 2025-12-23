@@ -29,7 +29,7 @@ public:
     
     void setLevel(int level) { 
         currentLevel = level; 
-        initializeLevel();  // 添加初始化函数
+        initializeLevel(); 
     }
     
 signals:
@@ -92,7 +92,7 @@ private:
     // 第三关相关
     qint64 survivalTimer{0};  // 存活时间
     qint64 autoHurtTimer{0};  // 自动扣血计时器
-    qint64 autoHurtInterval{1500};  // 每3秒扣血一次
+    qint64 autoHurtInterval{1500};  // 每1.5秒扣血一次
     int autoHurtAmount{5};  // 每次扣血量
 };
 

@@ -6,7 +6,7 @@
 PauseScene::PauseScene(QObject *parent) : QGraphicsScene(parent) {
     setSceneRect(0, 0, 1280, 720);
     
-    // 半透明背景 - 改为全屏
+    // 半透明背景
     QPixmap bgPixmap(":/Scenes/pause_background.png");
     if (!bgPixmap.isNull()) {
         QGraphicsPixmapItem *bg = new QGraphicsPixmapItem(bgPixmap.scaled(1280, 720, Qt::IgnoreAspectRatio, Qt::SmoothTransformation));

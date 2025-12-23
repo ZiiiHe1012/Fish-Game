@@ -9,7 +9,6 @@ public:
     
     void updateMovement(qint64 deltaTime);
     
-    // 重写 boundingRect 缩小碰撞体积
     QRectF boundingRect() const override;
     
 private:

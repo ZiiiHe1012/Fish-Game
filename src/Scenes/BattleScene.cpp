@@ -259,7 +259,7 @@ void BattleScene::processMovement() {
     int playerSize = character ? character->getSize() : 5;
     for (int i = bigFishes.size() - 1; i >= 0; i--) {
         BigFish *fish = bigFishes[i];
-        fish->updateMovement(deltaTime, playerPos, playerSize);  // 传入 playerSize
+        fish->updateMovement(deltaTime, playerPos, playerSize);
         
         QPointF pos = fish->pos();
         if (pos.x() < -250 || pos.x() > mapWidth + 250 || 
@@ -595,7 +595,7 @@ void BattleScene::initializeLevel() {
         }
     }
     map->setPos(0, 0);
-    map->setZValue(-1);  // 确保背景在最底层
+    map->setZValue(-1);
     
     // 设置 UI
     if (!gameUI) return;

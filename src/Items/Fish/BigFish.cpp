@@ -9,7 +9,7 @@ BigFish::BigFish(QGraphicsItem *parent, bool moveRight)
     setZValue(5);
     facingLeft = !moveRight;
 
-    qDebug() << "BigFish created, moveRight:" << moveRight;  // 添加调试
+    qDebug() << "BigFish created, moveRight:" << moveRight;
 
 
     if (pixmapItem) {
@@ -21,10 +21,10 @@ BigFish::BigFish(QGraphicsItem *parent, bool moveRight)
     
     if (moveRight) {
         velocity = QPointF(speedX, 0);
-        qDebug() << "Moving right with velocity:" << speedX;  // 添加调试
+        qDebug() << "Moving right with velocity:" << speedX;
     } else {
         velocity = QPointF(-speedX, 0);
-        qDebug() << "Moving left with velocity:" << -speedX;  // 添加调试
+        qDebug() << "Moving left with velocity:" << -speedX;
     }
 }
 
@@ -33,7 +33,7 @@ void BigFish::updateMovement(qint64 deltaTime, const QPointF &playerPos, int pla
     qreal distance = QLineF(pos(), playerPos).length();
     
     if (distance < chaseRange) {
-        // 在追踪范围内：追踪玩家
+        // 在追踪范围内追踪玩家
         QPointF direction = playerPos - pos();
         qreal dist = qSqrt(direction.x() * direction.x() + direction.y() * direction.y());
         
@@ -48,7 +48,7 @@ void BigFish::updateMovement(qint64 deltaTime, const QPointF &playerPos, int pla
             velocity = direction * actualChaseSpeed;
         }
     } else {
-        // 超出范围：恢复原来的横向移动
+        // 超出范围恢复原来的横向移动
         auto rand = QRandomGenerator::global();
         qreal speedX = (rand->bounded(80) + 40) / 1000.0;
         
@@ -79,7 +79,6 @@ void BigFish::updateMovement(qint64 deltaTime, const QPointF &playerPos, int pla
 QRectF BigFish::boundingRect() const {
     if (pixmapItem) {
         QRectF rect = pixmapItem->boundingRect();
-        // 缩小碰撞体积：宽度和高度各缩小到70%
         qreal shrink = 0.7;
         qreal newWidth = rect.width() * shrink;
         qreal newHeight = rect.height() * shrink;

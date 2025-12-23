@@ -1,5 +1,5 @@
-#ifndef QT_PROGRAMMING_2024_ITEM_H
-#define QT_PROGRAMMING_2024_ITEM_H
+#ifndef ITEM_H
+#define ITEM_H
 
 #include <QGraphicsItem>
 #include <QPainter>
@@ -12,21 +12,17 @@ public:
         if (pixmapItem != nullptr) {
             return this->pixmapItem->boundingRect();
         }
-        // Empty rectangle makes the empty item not selectable and not collider
         return {};
     }
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option,
                QWidget *widget) override {
-        // Draw nothing as it is an empty item
-        // Its pixmapItem is automatically handled by children's paint()
     }
     
-    // 添加公共访问方法
     QGraphicsPixmapItem* getPixmapItem() const { return pixmapItem; }
 
 protected:
     QGraphicsPixmapItem *pixmapItem{};
 };
 
-#endif //QT_PROGRAMMING_2024_ITEM_H
+#endif

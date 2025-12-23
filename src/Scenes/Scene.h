@@ -11,7 +11,7 @@ public:
     explicit Scene(QObject *parent);
 
     void startLoop();
-    void stopLoop();  // 添加这个方法
+    void stopLoop();
 
     virtual void processInput();
     virtual void processMovement();

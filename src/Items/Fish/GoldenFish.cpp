@@ -16,7 +16,7 @@ GoldenFish::GoldenFish(QGraphicsItem *parent, bool moveRight)
     }
     
     auto rand = QRandomGenerator::global();
-    qreal speedX = (rand->bounded(200) + 150) / 1000.0;  // 速度特别快
+    qreal speedX = (rand->bounded(200) + 150) / 1000.0;
     
     if (moveRight) {
         velocity = QPointF(speedX, 0);

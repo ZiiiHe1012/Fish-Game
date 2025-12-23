@@ -14,7 +14,7 @@ GameOverScene::GameOverScene(QObject *parent, bool victory, int score, int level
         AudioManager::instance()->playGameOverMusic();
     }
 
-    // 背景 - 全屏缩放
+    // 背景
     QString bgPath = victory ? ":/Scenes/victory_background.png" : ":/Scenes/gameover_background.png";
     QPixmap bgPixmap(bgPath);
     if (!bgPixmap.isNull()) {

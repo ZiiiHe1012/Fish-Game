@@ -29,7 +29,7 @@ void AudioManager::playMusic(const QString &filePath, bool loop, qreal volume) {
     audioOutput->setVolume(qBound(0.0, volume, 1.0));
 
     if (loop) {
-        // 只有当 loop 为 true 时，才设置循环播放
+        // 只有当loop为true时，才设置循环播放
         connect(musicPlayer, &QMediaPlayer::mediaStatusChanged, this, [this](QMediaPlayer::MediaStatus status) {
             if (status == QMediaPlayer::EndOfMedia) {
                 musicPlayer->setPosition(0);

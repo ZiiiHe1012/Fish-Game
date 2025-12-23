@@ -13,8 +13,6 @@ MyGame::MyGame(QWidget *parent) : QMainWindow(parent) {
     view->setFrameShape(QFrame::NoFrame);
     view->setMouseTracking(true);
     
-    // 删除 pauseView 相关代码
-    
     setCentralWidget(view);
     setFixedSize(1280, 720);
     

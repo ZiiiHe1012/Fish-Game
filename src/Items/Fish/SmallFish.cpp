@@ -8,7 +8,7 @@ SmallFish::SmallFish(QGraphicsItem *parent, bool moveRight)
     setScale(0.1);
     setZValue(5);
     
-    qDebug() << "SmallFish created, moveRight:" << moveRight;  // 添加调试
+    qDebug() << "SmallFish created, moveRight:" << moveRight;
 
 
     if (pixmapItem) {
@@ -20,10 +20,10 @@ SmallFish::SmallFish(QGraphicsItem *parent, bool moveRight)
     
     if (moveRight) {
         velocity = QPointF(speedX, 0);
-        qDebug() << "Moving right with velocity:" << speedX;  // 添加调试
+        qDebug() << "Moving right with velocity:" << speedX;
     } else {
         velocity = QPointF(-speedX, 0);
-        qDebug() << "Moving left with velocity:" << -speedX;  // 添加调试
+        qDebug() << "Moving left with velocity:" << -speedX;
     }
 }
 
@@ -34,7 +34,6 @@ void SmallFish::updateMovement(qint64 deltaTime) {
 QRectF SmallFish::boundingRect() const {
     if (pixmapItem) {
         QRectF rect = pixmapItem->boundingRect();
-        // 缩小碰撞体积：宽度和高度各缩小到60%
         qreal shrink = 0.6;
         qreal newWidth = rect.width() * shrink;
         qreal newHeight = rect.height() * shrink;
